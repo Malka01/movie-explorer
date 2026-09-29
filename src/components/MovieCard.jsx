@@ -38,7 +38,11 @@ function MovieCard({ movie }) {
   return (
     <Card
       sx={{
-        height: "100%",
+        height: {
+          xs: 520,
+          sm: 520,
+          md: 580,
+        },
         display: "flex",
         flexDirection: "column",
         position: "relative",
@@ -91,7 +95,11 @@ function MovieCard({ movie }) {
           alt={movie.title}
           loading="lazy"
           sx={{
-            aspectRatio: "2 / 3",
+            height: {
+              xs: 400,
+              sm: 390,
+              md: 450,
+            },
             objectFit: "cover",
           }}
         />
