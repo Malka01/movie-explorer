@@ -18,10 +18,12 @@ import {
   getMovieDetails,
   getMovieCredits,
   getMovieVideos,
+  searchMovies,
 } from "../services/tmdbApi";
+import { getMovieTitleFromSlug } from "../utils/movieSlug";
 
 function MovieDetails() {
-  const { id } = useParams();
+  const { movieName } = useParams();
 
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
@@ -36,11 +38,28 @@ function MovieDetails() {
         setLoading(true);
         setError("");
 
+        const isLegacyId = /^\d+$/.test(movieName);
+        let movieId = movieName;
+
+        if (!isLegacyId) {
+          const title = getMovieTitleFromSlug(movieName);
+          const searchData = await searchMovies(title);
+          const matchingMovie = (searchData.results || []).find(
+            (result) => result.title?.toLowerCase() === title.toLowerCase()
+          ) || searchData.results?.[0];
+
+          if (!matchingMovie) {
+            throw new Error("Movie not found");
+          }
+
+          movieId = matchingMovie.id;
+        }
+
         const [movieData, creditsData, videosData] =
           await Promise.all([
-            getMovieDetails(id),
-            getMovieCredits(id),
-            getMovieVideos(id),
+            getMovieDetails(movieId),
+            getMovieCredits(movieId),
+            getMovieVideos(movieId),
           ]);
 
         setMovie(movieData);
@@ -69,7 +88,7 @@ function MovieDetails() {
     };
 
     fetchMovieDetails();
-  }, [id]);
+  }, [movieName]);
 
   if (loading) {
     return (
@@ -133,15 +152,15 @@ function MovieDetails() {
       {/* Backdrop */}
       {backdropUrl && (
         <Box
+          component="img"
+          src={backdropUrl}
+          alt={`${movie.title} backdrop`}
           sx={{
+            display: "block",
+            width: "100%",
             height: { xs: 220, md: 400 },
-            backgroundImage: `linear-gradient(
-              to bottom,
-              rgba(0,0,0,0.15),
-              rgba(0,0,0,0.9)
-            ), url(${backdropUrl})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            objectFit: "cover",
+            objectPosition: "center",
           }}
         />
       )}
@@ -294,36 +313,66 @@ function MovieDetails() {
                     xs={6}
                     sm={4}
                     md={2}
+                    sx={{ minWidth: "20%" }}
                   >
-                    <Box>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: {
+                          xs: 320,
+                          sm: 350,
+                          md: 360,
+                        },
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                        borderRadius: 2,
+                        bgcolor: "background.paper",
+                        boxShadow: 2,
+                      }}
+                    >
                       <Box
                         component="img"
                         src={actorImage}
                         alt={actor.name}
                         sx={{
                           width: "100%",
-                          aspectRatio: "2 / 3",
+                          height: {
+                            xs: 220,
+                            sm: 245,
+                            md: 270,
+                          },
                           objectFit: "cover",
-                          borderRadius: 2,
                         }}
                       />
 
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          fontWeight: "bold",
-                          mt: 1,
-                        }}
-                      >
-                        {actor.name}
-                      </Typography>
+                      <Box sx={{ p: 1.5 }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontWeight: "bold",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {actor.name}
+                        </Typography>
 
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                      >
-                        {actor.character || "Unknown role"}
-                      </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {actor.character || "Unknown role"}
+                        </Typography>
+                      </Box>
                     </Box>
                   </Grid>
                 );
@@ -341,9 +390,9 @@ function MovieDetails() {
           <Typography
             variant="h4"
             component="h2"
-            sx={{ fontWeight: "bold", mb: 3 }}
+            sx={{ fontWeight: "bold", mb: 3, textAlign: "center" }}
           >
-            Trailer
+            Trailer On Board
           </Typography>
 
           {trailer ? (
@@ -380,6 +429,23 @@ function MovieDetails() {
           )}
         </Box>
       </Container>
+
+      <Box
+        component="footer"
+        sx={{
+          mt: 4,
+          py: 3,
+          px: 2,
+          textAlign: "center",
+          borderTop: 1,
+          borderColor: "divider",
+          bgcolor: "background.paper",
+        }}
+      >
+        <Typography variant="body2" color="text.secondary">
+          Movie Explorer · Movie data provided by TMDb
+        </Typography>
+      </Box>
     </Box>
   );
 }

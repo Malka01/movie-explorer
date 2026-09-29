@@ -14,6 +14,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import { Link } from "react-router-dom";
 import { useMovies } from "../context/MovieContext";
+import { createMovieSlug } from "../utils/movieSlug";
 
 function MovieCard({ movie }) {
   const { toggleFavorite, isFavorite } = useMovies();
@@ -80,7 +81,7 @@ function MovieCard({ movie }) {
       {/* Movie link */}
       <Box
         component={Link}
-        to={`/movie/${movie.id}`}
+        to={`/movie/${createMovieSlug(movie.title)}`}
         sx={{
           display: "flex",
           flexDirection: "column",
