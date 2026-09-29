@@ -57,10 +57,17 @@ function SearchBar() {
         gap: 1,
         mb: 4,
         width: "100%",
+        maxWidth: 750,
+        ml: "auto",
       }}
     >
       <TextField
-        fullWidth
+        sx={{
+          flex: 1,
+          "& .MuiInputBase-root": {
+            height: { xs: 45, sm: 50 },
+          },
+        }}
         value={query}
         onChange={handleQueryChange}
         placeholder="Search for a movie..."
@@ -79,7 +86,7 @@ function SearchBar() {
             xs: "100%",
             sm: "110px",
           },
-          minHeight: 56,
+          height: { xs: 45, sm: 50 },
         }}
       >
         {searchLoading

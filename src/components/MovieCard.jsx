@@ -91,8 +91,11 @@ function MovieCard({ movie }) {
           alt={movie.title}
           loading="lazy"
           sx={{
-            aspectRatio: "2 / 3",
+            display: "block",
+            width: "100%",
+            height: { xs: 300, sm: 450 },
             objectFit: "cover",
+            objectPosition: "center",
           }}
         />
 

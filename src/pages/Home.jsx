@@ -306,6 +306,23 @@ function Home() {
             )}
         </>
       )}
+
+      <Box
+        component="footer"
+        sx={{
+          mt: 8,
+          py: 3,
+          px: 2,
+          textAlign: "center",
+          borderTop: 1,
+          borderColor: "divider",
+          color: "text.secondary",
+        }}
+      >
+        <Typography variant="body2">
+          Movie Explorer · Movie data provided by TMDb
+        </Typography>
+      </Box>
     </Container>
   );
 }
