@@ -38,9 +38,9 @@ function Navbar({ darkMode, setDarkMode }) {
   };
 
   const handleMenuClose = () => {
-            <LightMode />
+    setMenuAnchor(null);
   };
-            <DarkMode />
+
   const handleLogout = () => {
     handleMenuClose();
     logout();
@@ -129,6 +129,11 @@ function Navbar({ darkMode, setDarkMode }) {
         {/* Theme Toggle */}
         <IconButton
           color="inherit"
+          aria-label={
+            darkMode
+              ? "Switch to light mode"
+              : "Switch to dark mode"
+          }
           onClick={() =>
             setDarkMode(
               (previous) => !previous
@@ -137,10 +142,8 @@ function Navbar({ darkMode, setDarkMode }) {
           sx={{ ml: 1 }}
         >
           {darkMode ? (
-            // <Brightness7 />
-              <LightMode />
+            <LightMode />
           ) : (
-            // <Brightness4 />
             <DarkMode />
           )}
         </IconButton>
@@ -148,8 +151,10 @@ function Navbar({ darkMode, setDarkMode }) {
         {/* Mobile Menu */}
         <IconButton
           color="inherit"
+          aria-label="Open navigation menu"
           onClick={handleMenuOpen}
           sx={{
+            ml: 0.5,
             display: {
               xs: "flex",
               sm: "none",
