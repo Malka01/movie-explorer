@@ -3,15 +3,21 @@ import MovieCard from "./MovieCard";
 
 function MovieGrid({ movies }) {
   return (
-    <Grid container spacing={3}>
+    <Grid
+      container
+      spacing={{
+        xs: 2,
+        sm: 3,
+      }}
+    >
       {movies.map((movie) => (
         <Grid
-          item
           key={movie.id}
-          xs={6}
-          sm={4}
-          md={3}
-          lg={2.4}
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 4,
+          }}
         >
           <MovieCard movie={movie} />
         </Grid>

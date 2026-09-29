@@ -1,151 +1,251 @@
+import { useState } from "react";
+
 import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
   Container,
   Typography,
-  CircularProgress,
-  Alert,
-  Button,
-  Box,
 } from "@mui/material";
 
 import MovieGrid from "../components/MovieGrid";
 import SearchBar from "../components/SearchBar";
+import MovieFilters from "../components/MovieFilters";
 
 import { useMovies } from "../context/MovieContext";
 
 function Home() {
   const {
     trendingMovies,
-
     searchResults,
+    hasSearched,
     searchQuery,
-
+    genres,
     loading,
     searchLoading,
-
     error,
     searchError,
-
     fetchTrendingMovies,
     loadMoreSearchResults,
-
     searchPage,
     totalPages,
   } = useMovies();
 
-  const isSearching = Boolean(searchQuery);
+  const [genreId, setGenreId] = useState("");
+  const [year, setYear] = useState("");
+  const [minRating, setMinRating] = useState("");
+
+  const resetFilters = () => {
+    setGenreId("");
+    setYear("");
+    setMinRating("");
+  };
+
+  const moviesToFilter = hasSearched
+    ? searchResults
+    : trendingMovies;
+
+  const filteredMovies = moviesToFilter.filter(
+    (movie) => {
+      const movieYear = movie.release_date
+        ? movie.release_date.substring(0, 4)
+        : "";
+
+      const selectedGenreId = Number(genreId);
+
+      const matchesGenre =
+        !genreId ||
+        (movie.genre_ids || []).includes(
+          selectedGenreId
+        ) ||
+        (movie.genres || []).some(
+          (genre) =>
+            genre.id === selectedGenreId
+        );
+
+      const matchesYear =
+        !year || movieYear === year;
+
+      const matchesRating =
+        !minRating ||
+        movie.vote_average >=
+          Number(minRating);
+
+      return (
+        matchesGenre &&
+        matchesYear &&
+        matchesRating
+      );
+    }
+  );
+
+  const isSearching = hasSearched;
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography
-        variant="h4"
-        component="h1"
+    <Container
+        maxWidth="xl"
         sx={{
-          fontWeight: "bold",
-          mb: 1,
+          py: {
+            xs: 3,
+            sm: 4,
+          },
+          px: {
+            xs: 2,
+            sm: 3,
+          },
         }}
       >
-        Discover Movies
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          fontWeight="bold"
+          gutterBottom
+          sx={{
+            fontSize: {
+              xs: "2rem",
+              sm: "2.5rem",
+              md: "3rem",
+            },
+          }}
+        >
+          Discover Movies 🎬
+        </Typography>
 
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ mb: 4 }}
-      >
-        Search and discover your favorite movies.
-      </Typography>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+        >
+          Search for movies, explore trending titles,
+          and save your favorites.
+        </Typography>
+      </Box>
 
       <SearchBar />
 
-      {/* Search Results */}
+      <MovieFilters
+        genres={genres}
+        genreId={genreId}
+        setGenreId={setGenreId}
+        year={year}
+        setYear={setYear}
+        minRating={minRating}
+        setMinRating={setMinRating}
+        onReset={resetFilters}
+      />
+
       {isSearching ? (
         <>
           <Typography
-            variant="h5"
+            variant="h4"
             component="h2"
+            fontWeight="bold"
             sx={{
-              fontWeight: "bold",
               mb: 3,
+              fontSize: {
+                xs: "1.6rem",
+                sm: "2rem",
+              },
             }}
           >
-            Search Results for "{searchQuery}"
+            Search Results
           </Typography>
 
-          {searchError && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {searchError}
-            </Alert>
+          {searchQuery && (
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 3 }}
+            >
+              Showing results for{" "}
+              <strong>
+                "{searchQuery}"
+              </strong>
+            </Typography>
           )}
 
-          {searchLoading && searchResults.length === 0 && (
+          {searchLoading && (
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "center",
-                py: 8,
+                py: 6,
               }}
             >
               <CircularProgress />
             </Box>
           )}
 
+          {searchError && (
+            <Alert
+              severity="error"
+              sx={{ mb: 3 }}
+            >
+              {searchError}
+            </Alert>
+          )}
+
           {!searchLoading &&
             !searchError &&
-            searchResults.length === 0 && (
+            filteredMovies.length === 0 && (
               <Alert severity="info">
-                No movies found for "{searchQuery}".
+                No movies match the selected
+                filters.
               </Alert>
             )}
 
-          {searchResults.length > 0 && (
-            <>
-              <MovieGrid movies={searchResults} />
+          {!searchLoading &&
+            !searchError &&
+            filteredMovies.length > 0 && (
+              <MovieGrid
+                movies={filteredMovies}
+              />
+            )}
 
-              {searchPage < totalPages && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    mt: 5,
-                  }}
+          {!searchLoading &&
+            !searchError &&
+            searchResults.length > 0 &&
+            searchPage < totalPages && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 5,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={loadMoreSearchResults}
                 >
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={loadMoreSearchResults}
-                    disabled={searchLoading}
-                  >
-                    {searchLoading
-                      ? "Loading..."
-                      : "Load More"}
-                  </Button>
-                </Box>
-              )}
+                  Load More
+                </Button>
+              </Box>
+            )}
 
-              {searchPage >= totalPages && (
-                <Typography
-                  align="center"
-                  color="text.secondary"
-                  sx={{ mt: 4 }}
-                >
-                  You've reached the end of the results.
-                </Typography>
-              )}
-            </>
-          )}
+          {!searchLoading &&
+            !searchError &&
+            searchResults.length > 0 &&
+            searchPage >= totalPages && (
+              <Typography
+                textAlign="center"
+                color="text.secondary"
+                sx={{ mt: 5 }}
+              >
+                You've reached the end of the
+                search results.
+              </Typography>
+            )}
         </>
       ) : (
-        /* Trending Movies */
         <>
           <Typography
-            variant="h5"
+            variant="h4"
             component="h2"
-            sx={{
-              fontWeight: "bold",
-              mb: 3,
-            }}
+            fontWeight="bold"
+            sx={{ mb: 3 }}
           >
-            Trending Movies
+            Trending Movies 🔥
           </Typography>
 
           {loading && (
@@ -153,7 +253,7 @@ function Home() {
               sx={{
                 display: "flex",
                 justifyContent: "center",
-                py: 8,
+                py: 6,
               }}
             >
               <CircularProgress />
@@ -161,25 +261,38 @@ function Home() {
           )}
 
           {error && (
-            <Box sx={{ mb: 3 }}>
-              <Alert severity="error">
-                {error}
-              </Alert>
+            <Alert
+              severity="error"
+              sx={{ mb: 3 }}
+            >
+              {error}
 
               <Button
-                variant="contained"
+                size="small"
                 onClick={fetchTrendingMovies}
-                sx={{ mt: 2 }}
+                sx={{ ml: 2 }}
               >
-                Try Again
+                Retry
               </Button>
-            </Box>
+            </Alert>
           )}
 
           {!loading &&
             !error &&
-            trendingMovies.length > 0 && (
-              <MovieGrid movies={trendingMovies} />
+            filteredMovies.length > 0 && (
+              <MovieGrid
+                movies={filteredMovies}
+              />
+            )}
+
+          {!loading &&
+            !error &&
+            trendingMovies.length > 0 &&
+            filteredMovies.length === 0 && (
+              <Alert severity="info">
+                No trending movies match the
+                selected filters.
+              </Alert>
             )}
 
           {!loading &&

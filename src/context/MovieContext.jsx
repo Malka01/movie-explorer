@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
+
 import {
   getTrendingMovies,
   searchMovies,
+  getMovieGenres,
 } from "../services/tmdbApi";
 
 const MovieContext = createContext();
@@ -9,8 +11,11 @@ const MovieContext = createContext();
 export function MovieProvider({ children }) {
   const [trendingMovies, setTrendingMovies] = useState([]);
 
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+const [searchResults, setSearchResults] = useState([]);
+const [searchQuery, setSearchQuery] = useState("");
+const [hasSearched, setHasSearched] = useState(false);
+const [favorites, setFavorites] = useState([]);
+const [genres, setGenres] = useState([]);
 
   const [searchPage, setSearchPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -63,11 +68,12 @@ export function MovieProvider({ children }) {
       }
 
       setSearchQuery(query);
-      setSearchPage(page);
-      setTotalPages(data.total_pages || 1);
+    setSearchPage(page);
+    setTotalPages(data.total_pages || 1);
+    setHasSearched(true);
 
-      // Save last search
-      localStorage.setItem("lastSearch", query);
+    // Save last search
+    localStorage.setItem("lastSearch", query);
     } catch (err) {
       console.error("Movie search failed:", err);
 
@@ -90,6 +96,67 @@ export function MovieProvider({ children }) {
     }
   };
 
+  // Load saved favorites
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("favorites");
+
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error(
+          "Failed to parse saved favorites:",
+          error
+        );
+
+        localStorage.removeItem("favorites");
+      }
+    }
+  }, []);
+
+  // Add or remove favorite
+  const toggleFavorite = (movie) => {
+    setFavorites((previousFavorites) => {
+      const alreadyFavorite = previousFavorites.some(
+        (favorite) => favorite.id === movie.id
+      );
+
+      let updatedFavorites;
+
+      if (alreadyFavorite) {
+        updatedFavorites = previousFavorites.filter(
+          (favorite) => favorite.id !== movie.id
+        );
+      } else {
+        updatedFavorites = [...previousFavorites, movie];
+      }
+
+      localStorage.setItem(
+        "favorites",
+        JSON.stringify(updatedFavorites)
+      );
+
+      return updatedFavorites;
+    });
+  };
+
+  // Check whether movie is favorite
+  const isFavorite = (movieId) => {
+    return favorites.some(
+      (favorite) => favorite.id === movieId
+    );
+  };
+
+  const fetchGenres = async () => {
+  try {
+    const data = await getMovieGenres();
+
+    setGenres(data.genres || []);
+  } catch (err) {
+    console.error("Failed to fetch movie genres:", err);
+  }
+};
+
   // Get previous search from LocalStorage
   useEffect(() => {
     const savedSearch = localStorage.getItem("lastSearch");
@@ -102,6 +169,7 @@ export function MovieProvider({ children }) {
   // Load trending movies on startup
   useEffect(() => {
     fetchTrendingMovies();
+    fetchGenres();
   }, []);
 
   return (
@@ -111,14 +179,21 @@ export function MovieProvider({ children }) {
 
         searchResults,
         searchQuery,
+        hasSearched,
         searchPage,
         totalPages,
+
+        genres,
 
         loading,
         searchLoading,
 
         error,
         searchError,
+
+        favorites,
+        toggleFavorite,
+        isFavorite,
 
         fetchTrendingMovies,
         searchMovie,

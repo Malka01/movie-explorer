@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
   TextField,
   Button,
@@ -14,7 +15,8 @@ function SearchBar() {
     searchLoading,
   } = useMovies();
 
-  const [query, setQuery] = useState(searchQuery);
+  const [query, setQuery] =
+    useState(searchQuery);
 
   useEffect(() => {
     setQuery(searchQuery);
@@ -36,6 +38,10 @@ function SearchBar() {
       onSubmit={handleSubmit}
       sx={{
         display: "flex",
+        flexDirection: {
+          xs: "column",
+          sm: "row",
+        },
         gap: 1,
         mb: 4,
         width: "100%",
@@ -44,7 +50,9 @@ function SearchBar() {
       <TextField
         fullWidth
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) =>
+          setQuery(event.target.value)
+        }
         placeholder="Search for a movie..."
         label="Search Movies"
       />
@@ -52,12 +60,21 @@ function SearchBar() {
       <Button
         type="submit"
         variant="contained"
-        disabled={searchLoading || !query.trim()}
+        disabled={
+          searchLoading ||
+          !query.trim()
+        }
         sx={{
-          minWidth: "110px",
+          minWidth: {
+            xs: "100%",
+            sm: "110px",
+          },
+          minHeight: 56,
         }}
       >
-        {searchLoading ? "Searching..." : "Search"}
+        {searchLoading
+          ? "Searching..."
+          : "Search"}
       </Button>
     </Box>
   );
