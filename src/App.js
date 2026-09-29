@@ -1,25 +1,47 @@
-import { useEffect } from "react";
-import { getTrendingMovies } from "./services/tmdbApi";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import MovieDetails from "./pages/MovieDetails";
+import Favorites from "./pages/Favorites";
+
+import { lightTheme, darkTheme } from "./theme/theme";
 
 function App() {
-  useEffect(() => {
-    const testApi = async () => {
-      try {
-        const data = await getTrendingMovies();
+  const [darkMode, setDarkMode] = useState(false);
 
-        console.log("TMDb Response:", data);
-      } catch (error) {
-        console.error("TMDb API Error:", error);
-      }
-    };
-
-    testApi();
-  }, []);
+  const theme = darkMode ? darkTheme : lightTheme;
 
   return (
-    <div>
-      <h1>Movie Explorer</h1>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+
+      <BrowserRouter>
+        <Navbar
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+        />
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route path="/login" element={<Login />} />
+
+          <Route
+            path="/movie/:id"
+            element={<MovieDetails />}
+          />
+
+          <Route
+            path="/favorites"
+            element={<Favorites />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
