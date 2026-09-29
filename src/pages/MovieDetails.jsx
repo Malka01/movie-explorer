@@ -235,7 +235,31 @@ function MovieDetails() {
               spacing={1}
               useFlexGap
               flexWrap="wrap"
-              sx={{ mb: 3 }}
+              sx={{
+                mb: 3,
+                display: {
+                  xs: "grid",
+                  sm: "flex",
+                },
+                gridTemplateColumns: {
+                  xs: "repeat(4, minmax(0, 1fr))",
+                },
+                rowGap: { xs: 1, sm: 1.5 },
+                maxWidth: "100%",
+                "& .MuiChip-root": {
+                  width: {
+                    xs: "100%",
+                    sm: "auto",
+                  },
+                  maxWidth: "100%",
+                  minWidth: 0,
+                },
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                },
+              }}
             >
               <Chip label={releaseYear} />
 
