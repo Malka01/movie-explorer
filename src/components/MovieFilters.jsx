@@ -6,7 +6,6 @@ import {
   MenuItem,
   Select,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 
@@ -20,6 +19,12 @@ function MovieFilters({
   setMinRating,
   onReset,
 }) {
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: currentYear - 1899 },
+    (_, index) => currentYear - index
+  );
+
   const activeFilterCount = [
     genreId,
     year,
@@ -97,20 +102,33 @@ function MovieFilters({
             </Select>
           </FormControl>
 
-          <TextField
+          <FormControl
             fullWidth
             size="small"
-            label="Release Year"
-            type="number"
-            value={year}
-            onChange={(event) =>
-              setYear(event.target.value)
-            }
-            inputProps={{
-              min: 1900,
-              max: new Date().getFullYear(),
-            }}
-          />
+          >
+            <InputLabel>Release Year</InputLabel>
+
+            <Select
+              value={year}
+              label="Release Year"
+              onChange={(event) =>
+                setYear(event.target.value)
+              }
+            >
+              <MenuItem value="">
+                All Years
+              </MenuItem>
+
+              {years.map((releaseYear) => (
+                <MenuItem
+                  key={releaseYear}
+                  value={String(releaseYear)}
+                >
+                  {releaseYear}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <FormControl
             fullWidth

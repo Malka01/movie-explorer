@@ -184,7 +184,7 @@ function MovieDetails() {
             }}
           >
           {/* Poster */}
-          <Grid item xs={12} md={4} lg={3}>
+          <Grid size={{ xs: 12, md: 4, lg: 3 }}>
             <Box
               component="img"
               src={posterUrl}
@@ -201,13 +201,19 @@ function MovieDetails() {
           </Grid>
 
           {/* Details */}
-          <Grid item xs={12} md={8} lg={9}>
+          <Grid size={{ xs: 12, md: 8, lg: 9 }}>
             <Typography
               variant="h3"
               component="h1"
               sx={{
                 fontWeight: "bold",
                 mb: 1,
+                fontSize: {
+                  xs: "2rem",
+                  sm: "2.5rem",
+                  md: "3rem",
+                },
+                overflowWrap: "anywhere",
               }}
             >
               {movie.title}
@@ -308,21 +314,12 @@ function MovieDetails() {
 
                 return (
                   <Grid
-                    item
                     key={actor.id}
-                    xs={6}
-                    sm={4}
-                    md={2}
-                    sx={{ minWidth: "20%" }}
+                    size={{ xs: 6, sm: 4, md: 2 }}
                   >
                     <Box
                       sx={{
                         width: "100%",
-                        height: {
-                          xs: 320,
-                          sm: 350,
-                          md: 360,
-                        },
                         display: "flex",
                         flexDirection: "column",
                         overflow: "hidden",
@@ -337,11 +334,7 @@ function MovieDetails() {
                         alt={actor.name}
                         sx={{
                           width: "100%",
-                          height: {
-                            xs: 220,
-                            sm: 245,
-                            md: 270,
-                          },
+                          aspectRatio: "2 / 3",
                           objectFit: "cover",
                         }}
                       />

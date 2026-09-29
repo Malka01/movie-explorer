@@ -70,9 +70,7 @@ const [genres, setGenres] = useState([]);
       setSearchQuery(query);
     setSearchPage(page);
     setTotalPages(data.total_pages || 1);
-    setHasSearched(true);
-
-    // Save last search
+      setHasSearched(true);
     localStorage.setItem("lastSearch", query);
     } catch (err) {
       console.error("Movie search failed:", err);
@@ -83,6 +81,15 @@ const [genres, setGenres] = useState([]);
     } finally {
       setSearchLoading(false);
     }
+  };
+
+  const clearSearch = () => {
+    setSearchResults([]);
+    setSearchQuery("");
+    setHasSearched(false);
+    setSearchPage(1);
+    setTotalPages(1);
+    setSearchError("");
   };
 
   // Load next search page
@@ -157,15 +164,6 @@ const [genres, setGenres] = useState([]);
   }
 };
 
-  // Get previous search from LocalStorage
-  useEffect(() => {
-    const savedSearch = localStorage.getItem("lastSearch");
-
-    if (savedSearch) {
-      setSearchQuery(savedSearch);
-    }
-  }, []);
-
   // Load trending movies on startup
   useEffect(() => {
     fetchTrendingMovies();
@@ -197,6 +195,7 @@ const [genres, setGenres] = useState([]);
 
         fetchTrendingMovies,
         searchMovie,
+        clearSearch,
         loadMoreSearchResults,
       }}
     >

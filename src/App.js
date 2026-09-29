@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
 import Navbar from "./components/Navbar";
@@ -14,7 +14,13 @@ import { MovieProvider } from "./context/MovieContext";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() =>
+    localStorage.getItem("darkMode") === "true"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", String(darkMode));
+  }, [darkMode]);
 
   const theme = darkMode ? darkTheme : lightTheme;
 

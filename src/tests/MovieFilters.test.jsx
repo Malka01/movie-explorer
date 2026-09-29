@@ -72,6 +72,24 @@ test("renders genre options", () => {
   ).toBeInTheDocument();
 });
 
+test("renders release year options and selects a year", () => {
+  const { setYear } = renderFilters();
+  const currentYear = new Date().getFullYear();
+  const releaseYearSelect = screen.getByLabelText(/release year/i);
+
+  expect(
+    screen.getByRole("option", {
+      name: String(currentYear),
+    })
+  ).toBeInTheDocument();
+
+  fireEvent.change(releaseYearSelect, {
+    target: { value: "2020" },
+  });
+
+  expect(setYear).toHaveBeenCalledWith("2020");
+});
+
 test("calls reset handler", () => {
   const { onReset } = renderFilters();
 

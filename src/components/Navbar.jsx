@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 
 import {
-  Brightness4,
-  Brightness7,
+  DarkMode,
+  LightMode,
   Menu as MenuIcon,
 } from "@mui/icons-material";
 
@@ -38,9 +38,9 @@ function Navbar({ darkMode, setDarkMode }) {
   };
 
   const handleMenuClose = () => {
-    setMenuAnchor(null);
+            <LightMode />
   };
-
+            <DarkMode />
   const handleLogout = () => {
     handleMenuClose();
     logout();
@@ -137,9 +137,11 @@ function Navbar({ darkMode, setDarkMode }) {
           sx={{ ml: 1 }}
         >
           {darkMode ? (
-            <Brightness7 />
+            // <Brightness7 />
+              <LightMode />
           ) : (
-            <Brightness4 />
+            // <Brightness4 />
+            <DarkMode />
           )}
         </IconButton>
 

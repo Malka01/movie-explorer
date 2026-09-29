@@ -108,6 +108,7 @@ function Home() {
               sm: "2.5rem",
               md: "3rem",
             },
+            textAlign: "center",
           }}
         >
           Discover Movies 🎬
@@ -116,6 +117,7 @@ function Home() {
         <Typography
           variant="body1"
           color="text.secondary"
+          sx={{textAlign: "center"}}
         >
           Search for movies, explore trending titles,
           and save your favorites.

@@ -11,6 +11,7 @@ import { useMovies } from "../context/MovieContext";
 function SearchBar() {
   const {
     searchMovie,
+    clearSearch,
     searchQuery,
     searchLoading,
   } = useMovies();
@@ -26,10 +27,21 @@ function SearchBar() {
     event.preventDefault();
 
     if (!query.trim()) {
+      clearSearch();
       return;
     }
 
     searchMovie(query.trim(), 1);
+  };
+
+  const handleQueryChange = (event) => {
+    const nextQuery = event.target.value;
+
+    setQuery(nextQuery);
+
+    if (!nextQuery.trim()) {
+      clearSearch();
+    }
   };
 
   return (
@@ -50,9 +62,7 @@ function SearchBar() {
       <TextField
         fullWidth
         value={query}
-        onChange={(event) =>
-          setQuery(event.target.value)
-        }
+        onChange={handleQueryChange}
         placeholder="Search for a movie..."
         label="Search Movies"
       />
