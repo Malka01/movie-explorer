@@ -9,6 +9,7 @@ import MovieDetails from "./pages/MovieDetails";
 import Favorites from "./pages/Favorites";
 
 import { lightTheme, darkTheme } from "./theme/theme";
+import { MovieProvider } from "./context/MovieContext";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -18,6 +19,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+
+      <MovieProvider>
 
       <BrowserRouter>
         <Navbar
@@ -41,6 +44,7 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
+      </MovieProvider>
     </ThemeProvider>
   );
 }
